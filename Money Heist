@@ -1,0 +1,82 @@
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 1280, 720
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("The Heist: Mint of Spain")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+
+# Game Clock
+clock = pygame.time.Clock()
+
+# Load assets
+# (Replace with actual asset files for characters, environment, etc.)
+character_image = pygame.Surface((50, 50))
+character_image.fill(RED)
+
+hostage_image = pygame.Surface((30, 30))
+hostage_image.fill(BLUE)
+
+# Game variables
+characters = {"Tokyo": (100, 100), "Berlin": (200, 200)}  # Starting positions
+hostages = [(400, 300), (450, 350), (500, 400)]  # Hostage positions
+selected_character = "Tokyo"
+
+# Functions
+def draw_environment():
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, BLACK, (300, 100, 680, 520), 5)  # Mint outline
+    pygame.draw.rect(screen, BLACK, (600, 400, 50, 50))  # Vault
+    pygame.draw.rect(screen, BLACK, (1000, 600, 50, 50))  # Tunnel entrance
+
+def draw_characters():
+    for name, pos in characters.items():
+        screen.blit(character_image, pos)
+
+def draw_hostages():
+    for pos in hostages:
+        screen.blit(hostage_image, pos)
+
+def move_character(key, name):
+    x, y = characters[name]
+    if key == pygame.K_UP: y -= 5
+    if key == pygame.K_DOWN: y += 5
+    if key == pygame.K_LEFT: x -= 5
+    if key == pygame.K_RIGHT: x += 5
+    characters[name] = (x, y)
+
+# Game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB:
+                # Switch character
+                keys = list(characters.keys())
+                idx = keys.index(selected_character)
+                selected_character = keys[(idx + 1) % len(keys)]
+            else:
+                move_character(event.key, selected_character)
+
+    # Draw everything
+    draw_environment()
+    draw_characters()
+    draw_hostages()
+
+    # Update display
+    pygame.display.flip()
+    clock.tick(30)
+
+pygame.quit()
+sys.exit()
